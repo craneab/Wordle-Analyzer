@@ -8,7 +8,7 @@ import json
 
 
 # Open wordle email directory and get list of email files
-email_list_dir = '.\Wordle emails'
+email_list_dir = 'Data/Wordle emails'
 email_list = listdir(email_list_dir)
 
 
@@ -92,7 +92,7 @@ wordle_result_dict = import_wordle_emails(email_list)
 #print(wordle_result_dict)
 
 # Save extracted email data as json file
-with open("imported_email_data.json", "w") as outfile: 
+with open("Data/Script data/Imported_email_data.json", "w") as outfile: 
     json.dump(wordle_result_dict, outfile, indent=4)
 
 

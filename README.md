@@ -4,7 +4,7 @@ A practice project in python programming to analyze Wordle results.
 ## Background
 Since the covid 2019 pandemic, my dad and I have been doing [NYT Wordle puzzles](https://www.nytimes.com/games/wordle/index.html) and sending each other the results using the share button on the Wordle website, which lets you email a visual representation of the puzzle results without the answer-revealing text characters.
 
-<table align="center">
+<table align="center" border='0'>
     <tr>
         <td>Example Wordle result:</td>
         <td>Wordle 1,209 4/6  <br>🟨⬜⬜🟨⬜<br>⬜⬜🟨⬜🟩<br>🟩🟩🟩⬜🟩<br>🟩🟩🟩🟩🟩</td>
@@ -84,7 +84,7 @@ In order to quickly and cleanly run statistics on the data, the byte representat
 
 As a result, a single Wordle puzzle would be converted as follows:
 
-<table align="center" >
+<table align="center" style="background-color:rgba(0, 0, 0, 0);" border='0'>
     <tr style="text-align: center">
     <th align='center'> 6 x 5 unicode chars
     </th>

@@ -6,7 +6,7 @@ import numpy as np
 import pickle
 
 # Load imported emails
-with open('imported_email_data.json', 'r') as file:
+with open('Data/Script data/Imported_email_data.json', 'r') as file:
     input_data_dict = json.load(file)
 
 # Def function to find the highest puzzle number completed
@@ -77,5 +77,5 @@ convert_emails_to_int(input_data_dict)
 
 
 # Save int representations as pickle file
-with open('Imported_email_data_with_ints.pkl','wb') as file:
+with open('Data/Script data/Imported_email_data_with_ints.pkl','wb') as file:
     pickle.dump(input_data_dict, file)
