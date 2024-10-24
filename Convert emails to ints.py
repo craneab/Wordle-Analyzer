@@ -16,7 +16,8 @@ def max_puzzle_num(input_data_dict):
     puzzle_nums_list = set().union(*input_data_dict.values())
 
     # Calculate and return max puzzle number
-    return int(max(puzzle_nums_list))
+    max_puzzle_num_int = int(max(puzzle_nums_list))
+    return max_puzzle_num_int
 
 
 # Def function to convert each imported email to int representation
