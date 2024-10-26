@@ -51,7 +51,7 @@ class WordleData:
             self.data_arr[cols,idx] = puzzle_solved_row[:,0]
 
             # If there is no row == 15, then assign row=7 to indicate puzzle was attempted but not solved
-            idx_unsolved = puzzle_solved_row[:,0] == 4
+            idx_unsolved = puzzle_solved_row[:,0] == 0
             self.data_arr[puzzle_solved_row[idx_unsolved,1],idx] = 7
 
         return self.data_arr

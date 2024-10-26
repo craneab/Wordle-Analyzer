@@ -16,7 +16,7 @@ def max_puzzle_num(input_data_dict):
     puzzle_nums_list = set().union(*input_data_dict.values())
 
     # Calculate and return max puzzle number
-    max_puzzle_num_int = int(max(puzzle_nums_list))
+    max_puzzle_num_int = max([*map(int, puzzle_nums_list)])
     return max_puzzle_num_int
 
 
