@@ -82,12 +82,11 @@ class WordleData:
             # If the sum across all rows is 0, then the puzzle was not attempted,
             # and the value will remain as nan
             puzzle_not_attempted = np.sum(all_puzzles_arr_rowsum, axis=0) == 0
-            #puzzle_not_attempted = np.argwhere(np.sum(all_puzzles_arr_rowsum, axis=0) == 0)
 
             # If the sum across all rows is 3*5=15, puzzle is solved at that row
             # puzzle_solved_row is an array of [row of solving, puzzle number]
             puzzle_solved_row = np.argwhere(all_puzzles_arr_rowsum == 15)
-            puzzle_solved_row[:,0] += 1     #convert 0-based array row to 1-based row
+            puzzle_solved_row[:,0] += 1     #convert 0-based array to 1-based wordle row
 
             # Store puzzle solved row in col per sender
             cols = puzzle_solved_row[:,1]
@@ -97,20 +96,6 @@ class WordleData:
             idx_puzz_solved = ~np.isnan(self.data_arr[:,idx])
             attempted_not_solved = ~puzzle_not_attempted & ~idx_puzz_solved
             self.data_arr[attempted_not_solved,idx] = 7
-
-            #self.data_arr[puzzle_solved_row[idx_unsolved,1],idx] = 7
-
-            # Add +1 to puzzle_solved_row bc array counting starts at 0,
-            # but leave unsolved puzzles at 0
-            #idx_unsolved = puzzle_solved_row[:,0] == 0
-            #puzzle_solved_row[~idx_unsolved,0] = puzzle_solved_row[~idx_unsolved,0]+1
-
-
-            # If there is no row == 15, then assign row=7 to indicate puzzle was attempted but not solved
-            #self.data_arr[puzzle_solved_row[idx_unsolved,1],idx] = 7
-
-            # If puzzle was not attempted, store as 'not a number'
-            #self.data_arr[puzzle_not_attempted,idx] = np.nan
 
         return self.data_arr
          
@@ -156,7 +141,9 @@ class WordleData:
 
         for mykey in self.data_dict.keys():
             df_weekly_sum[mykey] = df[[mykey,'Day of the week']].dropna().groupby('Day of the week',sort=False).size()
-            df_weekly_score[mykey] = df[[mykey,'Day of the week']].dropna().groupby('Day of the week',sort=False).mean()
+
+            # Replace scores of 7 (failed wordle) with Nan, which will be ignored in calculating mean
+            df_weekly_score[mykey] = df[[mykey,'Day of the week']].replace([7], np.nan).dropna().groupby('Day of the week',sort=False).mean()
 
         #pd.DataFrame.reindex()
         df_weekly_sum = df_weekly_sum.reindex(days,level='Day of the week')

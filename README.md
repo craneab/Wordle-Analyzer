@@ -1,5 +1,5 @@
 # Wordle Analyzer
-A practice project in python programming to analyze Wordle results.
+A practice project in python programming to analyze Wordle results. My overall goal in this project was to demonstrate ability to use common data analysis techniques in python, such as: using numpy, pandas, regular expressions, scipy stats, matplotlib, and seaborn, among other common packages; use of custom objects/classes and data engineering (in this case, extracting relevant email information from an email database and converting it to a useful python dictionary and array formats); as well as commonly used tools such as vscode, markdown files, working in both scripts and in Jupyter notebooks, and git/github.
 
 ## Background
 Since the covid 2019 pandemic, my dad and I have been doing [NYT Wordle puzzles](https://www.nytimes.com/games/wordle/index.html) and sending each other the results using the share button on the Wordle website, which lets you email a visual representation of the puzzle results without the answer-revealing text characters.

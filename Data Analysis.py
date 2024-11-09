@@ -9,7 +9,6 @@ with open('Data/Script data/Imported_email_data_with_ints.pkl','rb') as file:
 
 # Create custom wordle object with input data
 data = wordlemodule.WordleData(full_data)
-df_rsq, df_p = data.corr_pvals()
 df1,df2 = data.weekly()
 df = data.rolling(20)
 
