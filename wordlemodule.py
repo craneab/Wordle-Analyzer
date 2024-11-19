@@ -3,6 +3,7 @@ import pandas as pd
 from math import ceil
 import re
 from scipy.stats import pearsonr
+from sklearn.linear_model import LinearRegression
 
 class WordleData:
     def __init__(self,myData):
@@ -184,3 +185,35 @@ class WordleData:
                 df_p.loc[idx1,idx2] = corr[1]
         
         return df_rsq, df_p
+    
+    # Returns the score of the puzzles as a dataframe with a puzzle number column
+    def as_df(self):
+        df = pd.DataFrame(self.data_arr, columns=self.data_dict.keys())
+        df['Puzzle Number'] = df.index
+        return df
+    
+    # Returns the data as a dataframe, but each score is replaced by the regression prediction
+    def linear_reg(self):
+        df = self.as_df()
+        df_predicted = pd.DataFrame(np.nan, index=df.index, columns=df.columns.drop('Puzzle Number'))
+
+        for sender in df_predicted:
+
+            if sender == 'Puzzle Number':
+                continue
+
+            # Save a dataframe without nan's
+            df_no_na = df[[sender, 'Puzzle Number']].dropna()
+
+            # Create and fit linear regression
+            regressor = LinearRegression()
+            y = df_no_na[[sender]]
+            X = df_no_na[['Puzzle Number']]
+            regressor.fit(X, y)
+
+            # Use the regression to predict scores for all puzzles
+            my_range = np.arange(X.min().min(),X.max().max())
+            temp = pd.DataFrame(regressor.predict(my_range.reshape(-1,1)), columns=['Scores'], index=my_range)
+            df_predicted.loc[my_range,sender] = temp['Scores']
+        
+        return df_predicted
