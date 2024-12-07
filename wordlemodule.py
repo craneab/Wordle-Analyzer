@@ -4,6 +4,7 @@ from math import ceil
 import re
 from scipy.stats import pearsonr
 from sklearn.linear_model import LinearRegression
+import warnings
 
 class WordleData:
     def __init__(self,myData):
@@ -139,37 +140,42 @@ class WordleData:
         # Calculate how many puzzles were solved each day of the week
         df_weekly_sum = pd.DataFrame()
         df_weekly_score = pd.DataFrame()
+        df_weekly_score_sem = pd.DataFrame()
 
         for mykey in self.data_dict.keys():
             df_weekly_sum[mykey] = df[[mykey,'Day of the week']].dropna().groupby('Day of the week',sort=False).size()
 
             # Replace scores of 7 (failed wordle) with Nan, which will be ignored in calculating mean
             df_weekly_score[mykey] = df[[mykey,'Day of the week']].replace([7], np.nan).dropna().groupby('Day of the week',sort=False).mean()
+            df_weekly_score_sem[mykey] = df[[mykey,'Day of the week']].replace([7], np.nan).dropna().groupby('Day of the week',sort=False).sem()
 
-        #pd.DataFrame.reindex()
+        # Reorder the dataframe Sun->Sat
         df_weekly_sum = df_weekly_sum.reindex(days,level='Day of the week')
         df_weekly_score = df_weekly_score.reindex(days,level='Day of the week')
-        return df_weekly_sum, df_weekly_score
+        df_weekly_score_sem = df_weekly_score_sem.reindex(days,level='Day of the week')
+        
+        return df_weekly_sum, df_weekly_score, df_weekly_score_sem
     
     def rolling(self, mywindow):
         # Create dataframe
         df = pd.DataFrame(self.data_arr, columns=self.data_dict.keys())
-        df2 = pd.DataFrame()
+        df_rolled = pd.DataFrame(np.nan, index=df.index, columns=df.columns)
 
 
         # Each df column has different numbers of NA when they didn't complete the puzzle,
         # so in order to calculate the rolling average without including NA, 
         # go through each column individually and join them together afterward
         for mykey in df:
-            df2[mykey] = df[mykey].dropna().rolling(mywindow).mean().reindex(df.index, method='pad')
+            data_to_roll = df[mykey].dropna()
 
-        # Create column to track puzzle number
-        #df.insert(0,'Puzzle Number',range(self.MAX_PUZZ_NUM), False) 
+            if data_to_roll.size <= mywindow:
+                #warning
+                warnings.warn(f'{mykey} only has {data_to_roll.size} values, which is not enough to calculate using a sliding widow size of {mywindow}')
+                continue
 
-        #df2 = df['Doug'].dropna().rolling(mywindow).mean().reindex(df.index, method='pad')
-        #df2 = df['Doug'].rolling(window=mywindow).mean()
+            df_rolled[mykey] = data_to_roll.rolling(mywindow).mean().reindex(df.index, method='backfill')
 
-        return df2
+        return df_rolled
     
     def corr_pvals(self):
         df = pd.DataFrame(self.data_arr, columns=self.data_dict.keys())
@@ -199,9 +205,6 @@ class WordleData:
 
         for sender in df_predicted:
 
-            if sender == 'Puzzle Number':
-                continue
-
             # Save a dataframe without nan's
             df_no_na = df[[sender, 'Puzzle Number']].dropna()
 
@@ -209,11 +212,72 @@ class WordleData:
             regressor = LinearRegression()
             y = df_no_na[[sender]]
             X = df_no_na[['Puzzle Number']]
-            regressor.fit(X, y)
+            regressor.fit(X.values, y)
 
-            # Use the regression to predict scores for all puzzles
-            my_range = np.arange(X.min().min(),X.max().max())
-            temp = pd.DataFrame(regressor.predict(my_range.reshape(-1,1)), columns=['Scores'], index=my_range)
-            df_predicted.loc[my_range,sender] = temp['Scores']
+            # Use the regression to predict scores for all puzzles from this sender
+            puzzle_range = np.arange(X.min().min(),X.max().max())
+            temp = pd.DataFrame(regressor.predict(puzzle_range.reshape(-1,1)), columns=['Scores'], index=puzzle_range)
+            df_predicted.loc[puzzle_range,sender] = temp['Scores']
         
         return df_predicted
+    
+    def stats(self):
+        # Create dataframe and empty df for storing values
+        df = self.as_df().drop('Puzzle Number',axis=1)
+        results = pd.DataFrame({'Person':df.columns,
+                                'Mean solve score': np.nan,
+                                'Solve score standard deviation': np.nan,
+                                'Best solve score': np.nan,
+                                'Puzzles attempted': np.nan,
+                                'Puzzles not attempted': np.nan,
+                                'Longest not attempted puzzle streak': np.nan,
+                                'Longest attempted puzzle streak': np.nan,
+                                'Mean days between puzzles': np.nan
+                                })
+        
+
+
+        for person in df:
+            # Drop nan or guesses
+            df_dropna = df[person].dropna().index.to_numpy()
+            df_dropguess = df[person].drop(df_dropna).index.to_numpy()
+            
+            # Person's row in results for storing results
+            row = results['Person'] == person
+
+            # Calculate number of puzzles not attempted within the period of time
+            # that the person was submitting guesses
+            results.loc[row,'Puzzles not attempted'] = df.loc[df_dropna.min():df_dropna.max(),person].isna().sum()
+
+            # Calculate num of puzzles attempted
+            results.loc[row, 'Puzzles attempted'] = df_dropna.size
+
+            # Calculate longest not attempted streak
+            diff_indices_dropna = df_dropna[1:] - df_dropna[:-1]
+            results.loc[row, 'Longest not attempted puzzle streak'] = diff_indices_dropna.max()
+
+            # Calculate longest attempted streak
+            diff_indices_dropguess = df_dropguess[1:] - df_dropguess[:-1]
+            results.loc[row, 'Longest attempted puzzle streak'] = diff_indices_dropguess.max()
+
+            # Calculate best score
+            results.loc[row, 'Best solve score'] = df[person].min()
+
+            # Calculate solve score std dev
+            results.loc[row, 'Solve score standard deviation'] = df[person].std()
+
+            # Calculate mean solve score
+            results.loc[row, 'Mean solve score'] = df[person].mean()
+
+            # Calculate mean days between puzzles
+            results.loc[row, 'Mean days between puzzles'] = diff_indices_dropna.mean()
+
+        # Set dataframe properties
+        results.set_index('Person', inplace=True)
+        results['Best solve score'] = results['Best solve score'].map(int)
+        results['Longest not attempted puzzle streak'] = results['Longest not attempted puzzle streak'].map(int)
+        results['Longest attempted puzzle streak'] = results['Longest attempted puzzle streak'].map(int)
+        results['Puzzles not attempted'] = results['Puzzles not attempted'].map(int)
+        results['Puzzles attempted'] = results['Puzzles attempted'].astype(int)
+
+        return results
