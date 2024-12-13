@@ -15,7 +15,7 @@ class WordleData:
         # Clean names of senders
         self.clean_sender_names()
         
-        # Convert dictionary to array, with one column per sender
+        # Convert dictionary to array of solve scores, with one column per sender
         self.MAX_PUZZ_NUM = self.num_puzzles()
         self.NUM_SENDERS = self.num_senders()
         self.convert_to_arr()
@@ -281,3 +281,45 @@ class WordleData:
         results['Puzzles attempted'] = results['Puzzles attempted'].astype(int)
 
         return results
+    
+    def puzz_avg(self):
+
+        # Get data in dict format, and the puzzle solve score as well
+        data = self.data_dict
+        score = self.data_arr
+
+
+
+        # Create empty dict to hold results and array to hold avg for each person
+        results = {}
+        accum = np.empty([6,5,data.keys().__len__()])
+        
+        # Find average across all puzzles for each person
+        for i, person in enumerate(data):
+            # Reduce all puzzle guesses to only puzzles attempted
+            indeces_attempted = ~np.isnan(score[:,i])
+            person_all_puzzles = data[person]
+            person_attempted_puzzles = person_all_puzzles[:,:,indeces_attempted]
+
+            # Replace 0s (which means no guess) with nan so it's not included in the mean
+            indeces_letter_guessed = person_attempted_puzzles > 0
+            person_attempted_puzzles_nan = np.where(person_attempted_puzzles == 0, np.nan, person_attempted_puzzles)
+
+            # Find average for puzzles attempted
+            person_avg= np.nanmean(person_attempted_puzzles_nan,axis=2)
+
+            # Save results (with nan) in accum
+            accum[:,:,i] = person_avg
+
+            # Change nan to 0s for final results returned and save
+            results[person] = np.nan_to_num(person_avg,copy=False)
+
+
+
+        # Find average across all puzzles for all persons
+        results['Average'] = np.nanmean(accum,axis=2)
+        results['Average'] = np.nan_to_num(results['Average'],copy=False)
+        
+
+        return results
+        
