@@ -322,4 +322,92 @@ class WordleData:
         
 
         return results
+    
+    def letter_patterns(self):
+        # Create results variable to hold output of function, which will be a 6x5 array
+        # for each of the 6 guess rows of the puzzle, containing the top most commonly
+        # guessed patterns for that row
+        results = np.empty([6,5,6])
+        results_freq = np.empty([6,1,6])
+
+        # Get data in dict format
+        data = self.data_dict
+
+        # Change to numpy array and concatenate all puzzle guesses
+        arr = np.empty([6,5,self.MAX_PUZZ_NUM*self.NUM_SENDERS])
+
+        for i,sender in enumerate(data):
+            arr_range = range(self.MAX_PUZZ_NUM * i, self.MAX_PUZZ_NUM * (i+1))
+            arr[:,:,arr_range] = data[sender]
+
+        # For each guess row, count unique patterns
+        for i in range(6):
+
+            # Find unique patterns and their frequencies
+            unique, unique_counts = np.unique(arr[i,:,:], axis=1, return_counts=True)
+
+            # Sort unique by frequency of unique_counts
+            sorted_count_ind = np.argsort(-unique_counts)
+
+            # Save the top 6 patterns
+            results[:,:,i] = unique[:,sorted_count_ind[0:6]].T
+
+            # Save the frequency of each pattern
+            results_freq[:,0,i] = unique_counts[sorted_count_ind[0:6]] / np.sum(unique_counts)
+
+        return results, results_freq
+    
+def int_to_char(input,freq=None):
+    # Input: ndarray of numerical
+    # Output: ndarray of chars (green, white, or yellow wordle boxes)
+
+    # Cast input as int and flatten
+    int_arr = np.int32(input.flatten())
+
+    # Replace ints with unicode char codes
+    int_arr[int_arr==0] = 9744
+    int_arr[int_arr==1] = 11036
+    int_arr[int_arr==2] = 129000
+    int_arr[int_arr==3] = 129001
+
+    # Create char array using unicode char codes
+    '''
+    my_str = np.array2string(int_arr,
+                           max_line_width=7,
+                           formatter={'int':lambda x: chr(x)},
+                           separator='')
+    my_str = my_str.replace("[","").replace("]","").replace(" ","")   #get rid of brackets and spaces
+    '''
+    
+    # Create char array using unicode char codes
+    chr_ar = [chr(code) for code in int_arr]
+
+    # Insert newline characters at every 6th position
+    for count,listpos in enumerate(range(0,len(chr_ar),5)):
+        if listpos==0:
+            continue
+        if listpos>0 and listpos % 5 == 0:
+            chr_ar.insert(listpos+count-1,'\n')
+    
+    # Insert frequencies after '\n' if a freq var is passed 0 7 14
+    if freq is not None:
+        for count,currfreq in enumerate(freq):
+            insertion = '%'+ "{:.2f}".format((currfreq[0]*100))
+            if count == 0:
+                chr_ar.insert(0,insertion)
+            if count > 0:
+                idx = chr_ar.index('\n',(count-1)*7) + 1
+                chr_ar.insert(idx,insertion)
+    
+    # Join chars together
+    #print("".join(chr_ar))
+    return "".join(chr_ar)
+    
+    '''
+    # Convert wordle_puzz guesses to int
+    # 0 = space filler for unused guesses
+    # 1 = gray box (wrong letter, not in word) 11036
+    # 2 = yellow box (wrong letter, but is in word) 129000
+    # 3 = green box (right letter) 129001
+        '''
         
