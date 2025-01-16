@@ -29,6 +29,8 @@ class WordleData:
         self.NUM_SENDERS = self.num_senders()
         self.convert_to_arr()
 
+        warnings.filterwarnings('ignore')
+
 
 
     
