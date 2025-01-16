@@ -2,7 +2,7 @@
 A practice project in python programming to analyze Wordle results. My overall goal in this project was to demonstrate ability to use common data analysis techniques in python, such as: using numpy, pandas, regular expressions, scipy stats, matplotlib, and seaborn, among other common packages; use of custom objects/classes and data engineering (in this case, extracting relevant email information from an email database and converting it to a useful python dictionary and array formats); as well as commonly used tools such as vscode, markdown files, working in both scripts and in Jupyter notebooks, and git/github.
 
 ## Background
-Since the covid 2019 pandemic, my dad and I have been doing [NYT Wordle puzzles](https://www.nytimes.com/games/wordle/index.html) and sending each other the results using the share button on the Wordle website, which lets you email a visual representation of the puzzle results without the answer-revealing text characters.
+Since the covid 2019 pandemic, my dad and I (and a few others) have been doing [NYT Wordle puzzles](https://www.nytimes.com/games/wordle/index.html) and sending each other the results using the share button on the Wordle website, which lets you email a visual representation of the puzzle results without the answer-revealing text characters.
 
 <table align="center" border='0'>
     <tr>
@@ -15,14 +15,18 @@ Since the covid 2019 pandemic, my dad and I have been doing [NYT Wordle puzzles]
 I built this python code project for fun, and to analyze the results of downloaded Wordle result emails to answer questions such as:
 * Have I improved my average solve score over time?
 * On average, do I solve puzzles faster than my dad?
-* Am I more likely to solve a puzzle than my dad if I have a certain number of correct letters after a particular guess?
+* Do puzzles solved on weekends have higher scores than puzzles solved on weekdays?
 
 ## Code outline
-The code is split into three scripts, which operate on downloaded email (.eml) files stored in a local directory. Follow the steps below to understand how the code works and to run it on your own Wordle results!
+The code is split into three scripts, which operate on downloaded email files stored in a local directory. Follow the steps below to understand how the code works and to run it on your own Wordle results!
 
 ### 1. Download Wordle emails
 
-The first step is to download your Wordle emails. In gmail, you can either download emails individually by opening the email &rarr; clicking the three dot menu in the upper right &rarr; click download email, or you can download all Wordle emails at once by setting up a filter to add a label to all Wordle emails and then using Google Takeout to download all your email with that label. Disclaimer: I have not test non-gmail email files with this code.
+The first step is to download your Wordle emails. In gmail, you can either download wordle emails one of two ways:
+- Download emails one at a time: open the email &rarr; click the three dot menu in the upper right &rarr; download the email (this results in .eml format)
+- Download all Wordle emails at once: set up a filter to add a label to all Wordle emails and then using Google Takeout to download emails with that label (this results in a .mbox file).
+
+The data import script can handle both .eml and .mbox formats. Disclaimer: I have not test non-gmail email files with this code.
 
 ### 2. Import email data into a useable format (`Import email data.py`)
 
