@@ -106,7 +106,7 @@ As a result, a single Wordle puzzle would be converted as follows:
 Finally, the integer array for each puzzle is stored in a $R \times C \times P$ multi-dimensional numpy array, where $R$ is the row, $C$ is the column, and $P$ is the puzzle number. Therefore, to access the first row of guesses in puzzle 1210, you would slice the array by using `[1,:,1210]`, or to return the entire puzzle as a 6 x 5 array you would use `[:,:,1210]`.
 
 
-### 4. Data analysis
+### 4. Data analysis (`Data Analysis.ipynb`)
 
 Data analysis is contained within the `Data Analysis.ipynb` Jupyter notebook and `wordlemodule.py` custom python module. Graphs and explanations are handled by the Jupyter notebook, and calculations are handled by methods of the `wordlemodule.py` or of the `WordleData` class defined by `wordlemodule.py`.
 
