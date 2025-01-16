@@ -106,6 +106,8 @@ Finally, the integer array for each puzzle is stored in a $R \times C \times P$ 
 
 Data analysis is contained within the `Data Analysis.ipynb` Jupyter notebook and `wordlemodule.py` custom python module. Graphs and explanations are handled by the Jupyter notebook, and calculations are handled by methods of the `wordlemodule.py` or of the `WordleData` class defined by `wordlemodule.py`.
 
+[GO TO DATA ANALYSIS](https://github.com/craneab/Wordle-Analyzer/blob/main/Data%20Analysis.ipynb)
+
 To make the analysis easier, email addresses extracted from the emails can be converted into shorthand names. To do this, list each email adress followed by a colon and a name in /Misc/Email names.txt. For example:
 
 HPotter456@aol.com:Harry <br>
