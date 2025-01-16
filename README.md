@@ -18,7 +18,7 @@ I built this python code project for fun, and to analyze the results of download
 * Do puzzles solved on weekends have higher scores than puzzles solved on weekdays?
 
 ## Code outline
-The code is split into three scripts, which operate on downloaded email files stored in a local directory. Follow the steps below to understand how the code works and to run it on your own Wordle results!
+The code is split into functional scripts, which operate on downloaded email files stored in a local directory. Follow the steps below to understand how the code works and to run it on your own Wordle results!
 
 ### 1. Download Wordle emails
 
@@ -30,7 +30,7 @@ The data import script can handle both .eml and .mbox formats. Disclaimer: I hav
 
 ### 2. Import email data into a useable format (`Import email data.py`)
 
- This script scans the contents of each .eml file in the downloaded email directory and extracts the Wordle puzzle number and the sender of the email (the `From:` field) and stores these in a python dictionary. The body of the email is decoded from the base 64 encoding commonly used to ensure quality of email transmissions. 
+ This script scans the contents of each email in the downloaded email directory and extracts the Wordle puzzle number and the sender of the email (the `From:` field) and stores these in a python dictionary. The Wordle puzzle result characters (colored boxes) are contained in the body of the email, which the script decodes from base 64 (a common encoding for emails). 
 
 <div  style="text-align:center">
 <img src="Misc/Screenshot of Wordle email.png" width="400"/>

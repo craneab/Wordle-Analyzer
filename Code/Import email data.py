@@ -1,4 +1,4 @@
-# This script imports emails (.eml) downloaded from gmail containing wordle results
+'''This script imports emails (.eml) downloaded from gmail containing wordle results'''
 
 # Import necessary libraries
 from os import listdir
@@ -8,11 +8,12 @@ import mailbox
 import quopri
 import email
 
-# Def function to import wordle data from each email in mbox format
-def import_mbox_format():
 
-  # Def function to trim message contents to just wordle results
+def import_mbox_format():
+  '''Import wordle data from each email in mbox format'''
+
   def trim_results(input):
+    '''Def function to trim message contents to just wordle results'''
     puzz_end = input.find('<')
     content_trimmed = input[:puzz_end]
     return content_trimmed

@@ -1,4 +1,4 @@
-# This script converts Wordle results to integer representation for downstream analysis
+'''This script converts Wordle results to integer representation for downstream analysis'''
 
 # Import necessary libraries
 import json
@@ -9,8 +9,8 @@ import pickle
 with open('Data/Script data/Imported_email_data.json', 'r') as file:
     input_data_dict = json.load(file)
 
-# Def function to find the highest puzzle number completed
 def max_puzzle_num(input_data_dict):
+    '''Find the highest puzzle number completed'''
 
     # Collect puzzle numbers (1st level dict keys) in list
     puzzle_nums_list = set().union(*input_data_dict.values())
@@ -20,9 +20,8 @@ def max_puzzle_num(input_data_dict):
     return max_puzzle_num_int
 
 
-# Def function to convert each imported email to int representation
 def convert_emails_to_int(input_data_dict):
-
+    '''Convert each imported email to int representation'''
 
     # Loop through each sender email address in the data
     for sender in input_data_dict:
