@@ -7,7 +7,16 @@ from sklearn.linear_model import LinearRegression
 import warnings
 
 class WordleData:
+    '''
+    A class for manipulation of Wordle data and associated meta-data.
+    '''
     def __init__(self,myData):
+        '''
+        Initializes the WordleData object by extracting data from myData, calculating various constants, and converting it to a numpy array.
+
+        Parameters:
+        myData (dict): a dictionary of player names, with a second level dictionary of their scores
+        '''
 
         # Extract the int representation from dict
         self.extract_data(myData)
@@ -25,21 +34,39 @@ class WordleData:
     
     # Class Methods ---------------------------------------
 
-    # Save the integer representation of the wordle puzzles in its own dict
     def extract_data(self, myData):
+        '''
+        Save the integer representation of the wordle puzzles in its own dict
+
+        Parameters:
+        myData (dict): a dictionary of player names, with a second level dictionary of their scores
+
+        Returns:
+        self.data_dict (dict): a one-level dictionary of player scores
+        '''
         self.data_dict = {}
         for sender in myData:
             self.data_dict[sender] = myData[sender]['0']
     
-    # Clean names opens a text file supplied by the user which specifies 
-    # people's names to use instead of email addresses in the data analysis
+
     def clean_sender_names(self):
+        '''
+        Opens a text file supplied by the user which specifies 
+        names to use instead of email addresses in the data analysis.
+        If no names are provided, the email address is used.
+
+        Paramaters:
+        name_dir (string): directory of .txt file with names:emails
+
+        Returns:
+        self.data_dict (dict): replaced old keys (email addresses) with names 
+        '''
 
         # Create new dictionary to return with cleaned keys
         temp_dict = {}
 
         # Open user-supplied .txt file with desired names for each email address
-        with open('Misc/email names.txt','r') as file:
+        with open('Misc/Email names.txt','r') as file:
             user_supplied_email_names = {}
             for line in file:
                 user_supplied_e_address = re.search('.*:',line.rstrip())
@@ -68,11 +95,21 @@ class WordleData:
             temp_dict[name] = self.data_dict[old_key]
         self.data_dict = temp_dict
 
-    # Save the int representation of puzzle solved score in its own array,
-    # with each column corresponding to a sender
-    def convert_to_arr(self):
 
-        #self.data_arr = np.zeros([self.MAX_PUZZ_NUM, self.NUM_SENDERS])
+    def convert_to_arr(self):
+        '''
+        Save the int representation of puzzle solved score in a new numpy array,
+        with each column corresponding to a sender
+
+        Parameters:
+        self.data_dict (dict): dictionary of player scores
+        self.MAX_PUZZ_NUM (int): the highest numbered puzzle solved by any player
+        self.NUM_SENDERS(int): the number of players
+
+        Returns:
+        self.data_arr (numpy arr): row index corresponds to puzzle number, columns
+                                    correspond to players, values are solve scores 
+        '''
 
         # Create an array of not a number, which will store puzzle solve scores
         self.data_arr = np.full([self.MAX_PUZZ_NUM, self.NUM_SENDERS], np.nan)
@@ -102,10 +139,12 @@ class WordleData:
         return self.data_arr
          
     def num_senders(self):
+        '''Calculate the number of players for which data is available'''
         num_senders = len(self.data_dict)
         return num_senders
     
     # Find how many puzzles are in the array
+    '''Calculate the highest number puzzle solved by any player'''
     def num_puzzles(self):
         max_puzz_num = 0
         for sender in self.data_dict:
@@ -117,8 +156,17 @@ class WordleData:
 
         return max_puzz_num
 
-    # Make pandas dataframe with days of the week to match array of guesses
+
     def weekly(self):
+        '''
+        This function uses the array of solve scores from each player to create
+        a pandas dataframe, and adds an extra column to track day of the week.
+
+        Returns:
+        df_weekly_sum (dataframe): number of puzzles completed by each player for each day of the week
+        df_weekly_score (dataframe): mean solve score for each player for each day of the week
+        df_weekly_score_sem (dataframe): standard error of the mean
+        '''
         # Create dataframe
         df = pd.DataFrame(self.data_arr, columns=self.data_dict.keys())
 
@@ -157,6 +205,15 @@ class WordleData:
         return df_weekly_sum, df_weekly_score, df_weekly_score_sem
     
     def rolling(self, mywindow):
+        '''
+        Calculates the rolling average solve score for each player
+
+        Parameters:
+        mywindow (int): the window size for the rolling average
+        
+        Returns:
+        df_rolled (dataframe): the self.data_arr array, rolled
+        '''
         # Create dataframe
         df = pd.DataFrame(self.data_arr, columns=self.data_dict.keys())
         df_rolled = pd.DataFrame(np.nan, index=df.index, columns=df.columns)
@@ -178,6 +235,7 @@ class WordleData:
         return df_rolled
     
     def corr_pvals(self):
+        '''Calculates pearson's r-squared and p-values comparing each player to each other'''
         df = pd.DataFrame(self.data_arr, columns=self.data_dict.keys())
 
         df_rsq = pd.DataFrame() # Correlation matrix
@@ -192,14 +250,15 @@ class WordleData:
         
         return df_rsq, df_p
     
-    # Returns the score of the puzzles as a dataframe with a puzzle number column
     def as_df(self):
+        '''Returns the score of the puzzles as a dataframe with a puzzle number column'''
         df = pd.DataFrame(self.data_arr, columns=self.data_dict.keys())
         df['Puzzle Number'] = df.index
         return df
     
-    # Returns the data as a dataframe, but each score is replaced by the regression prediction
+
     def linear_reg(self):
+        '''Returns the data as a dataframe, but each score is replaced by the regression prediction'''
         df = self.as_df()
         df_predicted = pd.DataFrame(np.nan, index=df.index, columns=df.columns.drop('Puzzle Number'))
 
@@ -222,6 +281,7 @@ class WordleData:
         return df_predicted
     
     def stats(self):
+        '''Calculates various general statistics (mean scores, std dev, etc) for each player'''
         # Create dataframe and empty df for storing values
         df = self.as_df().drop('Puzzle Number',axis=1)
         results = pd.DataFrame({'Person':df.columns,
@@ -283,7 +343,10 @@ class WordleData:
         return results
     
     def puzz_avg(self):
-
+        '''
+        Calculates the mean int value for each position in the 5x6 puzzle grid
+        across all puzzles and all players
+        '''
         # Get data in dict format, and the puzzle solve score as well
         data = self.data_dict
         score = self.data_arr
@@ -324,6 +387,13 @@ class WordleData:
         return results
     
     def letter_patterns(self):
+        '''
+        Calculates the most frequent patterns of guess results for each of the 6 rows.
+
+        Returns:
+        results: the patterns of the most frequent results per row
+        results_freq: the frequency (percentage) of each result, excluding the all 0s result
+        '''
         # Create results variable to hold output of function, which will be a 6x5 array
         # for each of the 6 guess rows of the puzzle, containing the top most commonly
         # guessed patterns for that row
@@ -346,6 +416,11 @@ class WordleData:
             # Find unique patterns and their frequencies
             unique, unique_counts = np.unique(arr[i,:,:], axis=1, return_counts=True)
 
+            # Remove the unique row where there are no guesses (6 0s in a row)
+            idx_no_guesses = np.where(sum(unique) == 0)[0]
+            unique = np.delete(unique,idx_no_guesses, axis=1)
+            unique_counts = np.delete(unique_counts,idx_no_guesses)
+            
             # Sort unique by frequency of unique_counts
             sorted_count_ind = np.argsort(-unique_counts)
 
@@ -358,8 +433,22 @@ class WordleData:
         return results, results_freq
     
 def int_to_char(input,freq=None):
-    # Input: ndarray of numerical
-    # Output: ndarray of chars (green, white, or yellow wordle boxes)
+    '''
+    Converts unicode character codes to characters
+    
+    Parameters:
+    input: ndarray of numerical unicode values
+    freq: (optional) array same length as input with frequencies, which will
+            format and output frequencies as percentages
+
+    Returns:
+    ndarray of characters where
+    0 = space filler for unused guesses = 9744
+    1 = gray box (wrong letter, not in word) = 11036
+    2 = yellow box (wrong letter, but is in word) = 129000
+    3 = green box (right letter) = 129001
+
+    '''
 
     # Cast input as int and flatten
     int_arr = np.int32(input.flatten())
@@ -402,12 +491,4 @@ def int_to_char(input,freq=None):
     # Join chars together
     #print("".join(chr_ar))
     return "".join(chr_ar)
-    
-    '''
-    # Convert wordle_puzz guesses to int
-    # 0 = space filler for unused guesses
-    # 1 = gray box (wrong letter, not in word) 11036
-    # 2 = yellow box (wrong letter, but is in word) 129000
-    # 3 = green box (right letter) 129001
-        '''
         

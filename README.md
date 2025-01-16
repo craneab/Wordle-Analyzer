@@ -52,21 +52,6 @@ Dict
  
  Finally, the data is saved as a .json file.
  
- ```
-{
-    "person1email@gmail.com": {
-        "1208": "Wordle 1,208 4/6\r\n\r\n\u2b1c\u2b1c\u2b1c\u2b1c\u2b1c...",
-        "1210": "Wordle 1,210 5/6\r\n\r\n\u2b1c\u2b1c\u2b1c\u2b1c\u2b1c..."
-    },
-    "person2email@gmail.com": {
-        "1154": "Wordle 1,154 5/6\r\n\r\n\ud83d\udfe8\u2b1c\u2b1c\ud83d..."",
-        "1209": "Wordle 1,209 4/6\r\n\r\n\ud83d\udfe8\u2b1c\u2b1c\ud83d...",
-        "1210": "Wordle 1,210 6/6\r\n>\r\n> \u2b1c\u2b1c\u2b1c\u2b1c\ud83d...",
-        "1214": "Wordle 1,214 X/6\r\n\r\n\u2b1c\u2b1c\u2b1c\ud83d\udfe9..."
-    }
-}
- ```
- 
 ### 3. Convert Wordle results to int array for analysis (`Convert emails to ints.py`)
 
 In order to quickly and cleanly run statistics on the data, the byte representations of the grey, yellow, and green boxes should be converted to an array of integers. The code in `Convert emails to ints.py` converts the 6 x 5 unicode character representations of each Wordle result into a 6 x 5 numpy array of integers using the following scheme:
@@ -118,3 +103,14 @@ Finally, the integer array for each puzzle is stored in a $R \times C \times P$ 
 
 
 ### 4. Data analysis
+
+Data analysis is contained within the `Data Analysis.ipynb` Jupyter notebook and `wordlemodule.py` custom python module. Graphs and explanations are handled by the Jupyter notebook, and calculations are handled by methods of the `wordlemodule.py` or of the `WordleData` class defined by `wordlemodule.py`.
+
+To make the analysis easier, email addresses extracted from the emails can be converted into shorthand names. To do this, list each email adress followed by a colon and a name in /Misc/Email names.txt. For example:
+
+HPotter456@aol.com:Harry <br>
+Herm.Granger@yahoo.com:Hermione <br>
+unicorn_princess_666@yahoo.com:Hermione <br>
+rweas1@gmail.com:Ron
+
+To protect my privacy I haven't included this file in github.
