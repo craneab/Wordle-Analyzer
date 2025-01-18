@@ -108,15 +108,15 @@ Finally, the integer array for each puzzle is stored in a $R \times C \times P$ 
 
 ### 4. Data analysis (`Data Analysis.ipynb`)
 
-Data analysis is contained within the `Data Analysis.ipynb` Jupyter notebook and `wordlemodule.py` custom python module. Graphs and explanations are handled by the Jupyter notebook, and calculations are handled by methods of the `wordlemodule.py` or of the `WordleData` class defined by `wordlemodule.py`.
+Data analysis is executed through a combination of the `Data Analysis.ipynb` Jupyter notebook and `wordlemodule.py` custom python module. `wordlemodule.py` defines a custom class (the 'WordleData' class) for handling Wordle data, and well as related methods for calculations, data engineering, and analysis. The `Data Analysis.ipynb` Jupyter notebook creates a WordleData object and handles graphing and explanations.
 
 [GO TO DATA ANALYSIS](https://github.com/craneab/Wordle-Analyzer/blob/main/Data%20Analysis.ipynb)
 
-To make the analysis easier, email addresses extracted from the emails can be converted into shorthand names. To do this, list each email adress followed by a colon and a name in /Misc/Email names.txt. For example:
+To make the analysis clearer, email addresses extracted from the original Wordle emails can be converted into shorthand names. To do this, the WordleData object searches for a text file (/Misc/Email names.txt) containing the email addresses and the names. Multiple email addresses can be linked to the same name. For example:
 
 HPotter456@aol.com:Harry <br>
 Herm.Granger@yahoo.com:Hermione <br>
 unicorn_princess_666@yahoo.com:Hermione <br>
 rweas1@gmail.com:Ron
 
-To protect my privacy I haven't included this file in github.
+To protect the privacy of my family and friends I haven't included this file in github, and I have used alternative names for the analysis.
